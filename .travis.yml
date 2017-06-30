@@ -1,0 +1,35 @@
+language: generic
+os: linux
+dist: trusty
+sudo: required
+before_install:
+  - sudo add-apt-repository -y ppa:ondrej/php
+  - sudo apt-get -qq update
+  - sudo apt-get install -y php7.1 php7.1-xdebug
+script:
+  - mkdir bundle && cd bundle
+  - cp ../php.sh . && chmod +x php.sh
+  - cp /var/cache/apt/archives/php7.1*.deb .
+  - cp /var/cache/apt/archives/php-xdebug*.deb .
+  - cp /var/cache/apt/archives/libssl1.0.2*.deb .
+  - find . -maxdepth 1 -type f -name "*.deb" -exec dpkg -x {} . \;
+  - rm -f *.deb
+  - cp -rL /etc/php/7.1/cli etc/php/7.1/
+  - find etc/php/7.1/cli/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=#zend_extension=\$(pwd)/usr/lib/php/20160303/#g" {} \;
+  - find etc/php/7.1/cli/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^extension=#extension=\$(pwd)/usr/lib/php/20160303/#g" {} \;
+  - tar czf ../php71-$TRAVIS_TAG.tar.gz .
+  - find etc/php/7.1/cli/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=\$(pwd)/usr/lib/php/20160303/#zend_extension=$(pwd)/usr/lib/php/20160303/#g" {} \;
+  - find etc/php/7.1/cli/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^extension=\$(pwd)/usr/lib/php/20160303/#extension=$(pwd)/usr/lib/php/20160303/#g" {} \;
+  - sudo apt-get purge -y apache2 apache2-bin apache2-data libapache2-mod-php7.1 libaprutil1-dbd-sqlite3 libaprutil1-ldap libssl1.0.2 php-common php7.1-cli php7.1-common php7.1-json php7.1-opcache php7.1-readline ssl-cert
+  - sudo apt-get autoremove
+  - ./php.sh --version
+  - ./php.sh --ini
+  - cd ..
+deploy:
+  provider: releases
+  api_key:
+    secure: rmtEZTZZ/qv9VJqqu+soEWXKi1uL53uzadGlME+mOYglnQfGx6WBy5ZAdvPzZllwDE3cpQcxQK2BKSDcnJpBqM7g0TMC1P1XbFSxT2TF5dpBHBicydlSFv4UGwsn9ULt5I2FL3Z7zCgsRhQG6Cne+8FaaL8XQGpQksdPjAZZ01tlYvsWLOEpuXriHMMVzCoG2A8I3lNS2c8GCkVvD1xLo/TjYsMVw2tsr+CL6XJVXMQRrOK5VIm5jl6cVyt6tFiKuwU2TGEYs9brRi/hrxOiF4gXCKdUyrv5qjg6EmDiJVqhwhxzQmNNtgO/2BOOV/rsCRlm/G24nQ95DRY228OXSI8qvDpu8iVsKPmRoJhoTmYU3Usj3pMUMSKL1Y+5kbxXydVeczG9ZT9IxaqeDB8PxgWDwjPFoHPmAQuiijqnCTf5hvZ6cZ1ASzFw9qO/9ZWV9i7TrmdumDiqzcVtjvIRiZ73yrHHUDecZYFHjhfTfcJMgWZvMzQkoXi8vzkENWE8w4l++bOl4QDjOZS3ZFNXli19WGQu1StC+1Ql1IWw4SHUqRDDFGwvJ9bbWMN0uJEtego7qzvF4hFkRb2ZcHvtZWeCGVsfst7K5ZdV1Zo4sBzdga07OwkpM/tV1Lv3+LEY9+Es6xVpBHdmespopWjU07kq+ljESQgelpSkmUJ/AaQ=
+  file: php71-$TRAVIS_TAG.tar.gz
+  skip_cleanup: true
+  on:
+    tags: true
