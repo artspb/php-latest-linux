@@ -11,7 +11,7 @@ script:
   - cp ../php.sh . && chmod +x php.sh
   - cp /var/cache/apt/archives/php7.1*.deb .
   - cp /var/cache/apt/archives/php-xdebug*.deb .
-  - cp /var/cache/apt/archives/libssl1.0.2*.deb .
+  - cp /var/cache/apt/archives/libssl1.1*.deb .
   - find . -maxdepth 1 -type f -name "*.deb" -exec dpkg -x {} . \;
   - rm -f *.deb
   - cp -rL /etc/php/7.1/cli etc/php/7.1/
