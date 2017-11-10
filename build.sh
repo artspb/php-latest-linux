@@ -47,7 +47,7 @@ cp --parents /usr/local/bin/phar.phar .
 tar czf ../php71-${TRAVIS_TAG}.tar.gz .
 
 # restore configuration files
-find usr/local/etc/php/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=\$(pwd)#zend_extension=#g" $(pwd)/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \;
+find usr/local/etc/php/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=\$(pwd)#zend_extension=$(pwd)#g" $(pwd)/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \;
 
 # delete all real files
 for lib in "${libs[@]}"

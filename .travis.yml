@@ -3,15 +3,13 @@ os: linux
 sudo: required
 services: docker
 before_install:
-  - docker pull php
   - docker build -t php-latest .
 script:
-  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest php-latest /usr/src/php-latest/build.sh
-  - docker pull ubuntu
-  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest ubuntu:16.04 /usr/src/php-latest/test.sh
-  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest ubuntu:16.10 /usr/src/php-latest/test.sh
-  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest ubuntu:17:04 /usr/src/php-latest/test.sh
-  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest ubuntu:17:10 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest php-latest /usr/src/php-latest/build.sh
+  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest ubuntu:16.04 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest ubuntu:16.10 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest ubuntu:17.04 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest ubuntu:17.10 /usr/src/php-latest/test.sh
 deploy:
   provider: releases
   api_key:
