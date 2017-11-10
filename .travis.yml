@@ -1,30 +1,17 @@
 language: generic
 os: linux
-dist: trusty
 sudo: required
+services: docker
 before_install:
-  - sudo add-apt-repository -y ppa:ondrej/php
-  - sudo apt-get -qq update
-  - sudo apt-get install -y php7.1 php7.1-xdebug
+  - docker pull php
+  - docker build -t php-latest .
 script:
-  - mkdir bundle && cd bundle
-  - cp ../php.sh . && chmod +x php.sh
-  - cp /var/cache/apt/archives/php7.1*.deb .
-  - cp /var/cache/apt/archives/php-xdebug*.deb .
-  - cp /var/cache/apt/archives/libssl1.1*.deb .
-  - find . -maxdepth 1 -type f -name "*.deb" -exec dpkg -x {} . \;
-  - rm -f *.deb
-  - cp -rL /etc/php/7.1/cli etc/php/7.1/
-  - find etc/php/7.1/cli/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=#zend_extension=\$(pwd)/usr/lib/php/20160303/#g" {} \;
-  - find etc/php/7.1/cli/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^extension=#extension=\$(pwd)/usr/lib/php/20160303/#g" {} \;
-  - tar czf ../php71-$TRAVIS_TAG.tar.gz .
-  - find etc/php/7.1/cli/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=\$(pwd)/usr/lib/php/20160303/#zend_extension=$(pwd)/usr/lib/php/20160303/#g" {} \;
-  - find etc/php/7.1/cli/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^extension=\$(pwd)/usr/lib/php/20160303/#extension=$(pwd)/usr/lib/php/20160303/#g" {} \;
-  - sudo apt-get purge -y apache2 apache2-bin apache2-data libapache2-mod-php7.1 libaprutil1-dbd-sqlite3 libaprutil1-ldap libssl1.0.2 php-common php7.1-cli php7.1-common php7.1-json php7.1-opcache php7.1-readline ssl-cert
-  - sudo apt-get autoremove
-  - ./php.sh --version
-  - ./php.sh --ini
-  - cd ..
+  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest php-latest /usr/src/php-latest/build.sh
+  - docker pull ubuntu
+  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest ubuntu:16.04 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest ubuntu:16.10 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest ubuntu:17:04 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e TRAVIS_TAG --mount type=bind,source="$(pwd)",target=/usr/src/php-latest ubuntu:17:10 /usr/src/php-latest/test.sh
 deploy:
   provider: releases
   api_key:
