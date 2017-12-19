@@ -3,7 +3,7 @@
 set -e
 
 # initial cleanup
-rm -rf bundle && rm -f php71-${TRAVIS_TAG}.tar.gz
+rm -rf bundle && rm -f php72-${VERSION}.tar.gz
 
 # create bundle
 mkdir bundle && cd bundle
@@ -25,6 +25,10 @@ libkeyutils=$(ldd `which php` | grep '=>' | grep libkeyutils.so | grep -oP '/.*(
 if [ -n "${libkeyutils}" ]; then
     cp ${libkeyutils} usr/lib/x86_64-linux-gnu
 fi
+libidn=$(ldd `which php` | grep '=>' | grep libidn.so | grep -oP '/.*(?= )')
+if [ -n "${libidn}" ]; then
+    cp ${libidn} usr/lib/x86_64-linux-gnu
+fi
 
 # copy extension libraries
 cp -r --parents /usr/local/lib/php/extensions .
@@ -44,7 +48,7 @@ cp -d --parents /usr/local/bin/phar .
 cp --parents /usr/local/bin/phar.phar .
 
 # build archive
-tar czf ../php71-${TRAVIS_TAG}.tar.gz .
+tar czf ../php72-${VERSION}.tar.gz .
 
 # restore configuration files
 find usr/local/etc/php/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=\$(pwd)#zend_extension=$(pwd)#g" $(pwd)/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \;

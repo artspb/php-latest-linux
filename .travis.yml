@@ -3,18 +3,19 @@ os: linux
 sudo: required
 services: docker
 before_install:
+  - export VERSION=${TRAVIS_TAG:-snapshot}
   - docker build -t php-latest .
 script:
-  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest php-latest /usr/src/php-latest/build.sh
-  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest ubuntu:16.04 /usr/src/php-latest/test.sh
-  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest ubuntu:16.10 /usr/src/php-latest/test.sh
-  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest ubuntu:17.04 /usr/src/php-latest/test.sh
-  - docker run -it --rm -e TRAVIS_TAG -v "$(pwd)":/usr/src/php-latest ubuntu:17.10 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e VERSION -v "$(pwd)":/usr/src/php-latest php-latest /usr/src/php-latest/build.sh
+  - docker run -it --rm -e VERSION -v "$(pwd)":/usr/src/php-latest ubuntu:16.04 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e VERSION -v "$(pwd)":/usr/src/php-latest ubuntu:16.10 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e VERSION -v "$(pwd)":/usr/src/php-latest ubuntu:17.04 /usr/src/php-latest/test.sh
+  - docker run -it --rm -e VERSION -v "$(pwd)":/usr/src/php-latest ubuntu:17.10 /usr/src/php-latest/test.sh
 deploy:
   provider: releases
   api_key:
     secure: rmtEZTZZ/qv9VJqqu+soEWXKi1uL53uzadGlME+mOYglnQfGx6WBy5ZAdvPzZllwDE3cpQcxQK2BKSDcnJpBqM7g0TMC1P1XbFSxT2TF5dpBHBicydlSFv4UGwsn9ULt5I2FL3Z7zCgsRhQG6Cne+8FaaL8XQGpQksdPjAZZ01tlYvsWLOEpuXriHMMVzCoG2A8I3lNS2c8GCkVvD1xLo/TjYsMVw2tsr+CL6XJVXMQRrOK5VIm5jl6cVyt6tFiKuwU2TGEYs9brRi/hrxOiF4gXCKdUyrv5qjg6EmDiJVqhwhxzQmNNtgO/2BOOV/rsCRlm/G24nQ95DRY228OXSI8qvDpu8iVsKPmRoJhoTmYU3Usj3pMUMSKL1Y+5kbxXydVeczG9ZT9IxaqeDB8PxgWDwjPFoHPmAQuiijqnCTf5hvZ6cZ1ASzFw9qO/9ZWV9i7TrmdumDiqzcVtjvIRiZ73yrHHUDecZYFHjhfTfcJMgWZvMzQkoXi8vzkENWE8w4l++bOl4QDjOZS3ZFNXli19WGQu1StC+1Ql1IWw4SHUqRDDFGwvJ9bbWMN0uJEtego7qzvF4hFkRb2ZcHvtZWeCGVsfst7K5ZdV1Zo4sBzdga07OwkpM/tV1Lv3+LEY9+Es6xVpBHdmespopWjU07kq+ljESQgelpSkmUJ/AaQ=
-  file: php71-$TRAVIS_TAG.tar.gz
+  file: php72-${VERSION}.tar.gz
   skip_cleanup: true
   on:
     tags: true
