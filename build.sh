@@ -29,6 +29,10 @@ libidn=$(ldd `which php` | grep '=>' | grep libidn.so | grep -oP '/.*(?= )')
 if [ -n "${libidn}" ]; then
     cp ${libidn} usr/lib/x86_64-linux-gnu
 fi
+libsodium=$(find / -name libsodium.so.18)
+if [ -n "${libsodium}" ]; then
+    cp ${libsodium} usr/lib/x86_64-linux-gnu
+fi
 
 # copy extension libraries
 cp -r --parents /usr/local/lib/php/extensions .
@@ -40,7 +44,8 @@ if [ ! -f usr/local/etc/php/php.ini ]; then
 fi
 
 # add placeholder to configuration files
-find usr/local/etc/php/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=#zend_extension=\$(pwd)#g" $(pwd)/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \;
+sed -i -e "s#^zend_extension=#zend_extension=\$(pwd)#g" usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+sed -i -e "s#^extension=sodium.so#extension=\$(pwd)/$(find usr -name sodium.so)#g" usr/local/etc/php/conf.d/docker-php-ext-sodium.ini
 
 # copy binaries
 cp --parents /usr/local/bin/php .
@@ -51,7 +56,8 @@ cp --parents /usr/local/bin/phar.phar .
 tar czf ../php72-${VERSION}.tar.gz .
 
 # restore configuration files
-find usr/local/etc/php/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=\$(pwd)#zend_extension=$(pwd)#g" $(pwd)/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \;
+sed -i -e "s#^zend_extension=\$(pwd)#zend_extension=$(pwd)#g" usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+sed -i -e "s#^extension=\$(pwd)#extension=$(pwd)#g" usr/local/etc/php/conf.d/docker-php-ext-sodium.ini
 
 # delete all real files
 for lib in "${libs[@]}"

@@ -8,7 +8,8 @@ mkdir /usr/src/php-latest/test && cd /usr/src/php-latest/test
 tar xzf ../php72-${VERSION}.tar.gz
 
 # restore configuration files
-find usr/local/etc/php/conf.d/ -maxdepth 1 -type f -exec sed -i -e "s#^zend_extension=\$(pwd)#zend_extension=$(pwd)#g" $(pwd)/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \;
+sed -i -e "s#^zend_extension=\$(pwd)#zend_extension=$(pwd)#g" usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+sed -i -e "s#^extension=\$(pwd)#extension=$(pwd)#g" usr/local/etc/php/conf.d/docker-php-ext-sodium.ini
 
 # test executable script
 ./php.sh --version
