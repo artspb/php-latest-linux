@@ -3,7 +3,7 @@
 set -e
 
 # extract bundle
-rm -rf test
+rm -rf /usr/src/php-latest/test
 mkdir /usr/src/php-latest/test && cd /usr/src/php-latest/test
 tar xzf ../php72-${VERSION}.tar.gz
 
