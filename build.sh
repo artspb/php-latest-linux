@@ -3,7 +3,7 @@
 set -e
 
 # initial cleanup
-rm -rf bundle && rm -f php72-${VERSION}.tar.gz
+rm -rf bundle && rm -f php73-${VERSION}.tar.gz
 
 # create bundle
 mkdir bundle && cd bundle
@@ -53,7 +53,7 @@ cp -d --parents /usr/local/bin/phar .
 cp --parents /usr/local/bin/phar.phar .
 
 # build archive
-tar czf ../php72-${VERSION}.tar.gz .
+tar czf ../php73-${VERSION}.tar.gz .
 
 # restore configuration files
 sed -i -e "s#^zend_extension=\$(pwd)#zend_extension=$(pwd)#g" usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
